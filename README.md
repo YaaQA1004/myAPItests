@@ -1,4 +1,30 @@
 newman
+Guidelines on installation NODE JS and NPM
+https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
+How to install Newman:
+https://www.npmjs.com/package/newman#getting-started
+Working with Newman (complete guide)
+https://www.npmjs.com/package/newman
+For macOS users
+If you fail to run command $ npm install -g newman
+Try running it with sudo (super user do command)
+sudo npm install -g newman
+It will prompt you for admin password and run the command to install Newman
+
+cd Desktop\ASK-Tests
+dir
+newman run ASK_Tests.postman_collection.json -e ASK_QA.postman_environment.json
+newman run ASK_Tests.postman_collection.json -e ASK_QA.postman_environment.json
+Результаты теста на экран
+newman run DataVariables.postman_collection.json -e ASK_QA.postman_environment.json -d Data.csv
+Результаты теста в файл
+newman run DataVariables.postman_collection.json -e ASK_QA.postman_environment.json -d Data.csv > results.txt
+
+Генерация базы данных для тестирования
+npm install -g xmysql
+xmysql -h 44.205.92.189 --port 3308 -u testuser -p password -d application 
+чтобы связать Постман с базой данных (реквизиты базы)
+
 
 ASK_Tests
 
