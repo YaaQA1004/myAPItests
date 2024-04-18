@@ -1,0 +1,890 @@
+{
+	"info": {
+		"_postman_id": "b3f2123f-9e4d-4777-a77a-3efce5663ecc",
+		"name": "ASK_Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28891040",
+		"_collection_link": "https://www.postman.com/crimson-crescent-434048/workspace/ask-mar24-yaa/collection/28891040-b3f2123f-9e4d-4777-a77a-3efce5663ecc?action=share&source=collection_link&creator=28891040"
+	},
+	"item": [
+		{
+			"name": "/sign-up - [S] New user and sends verification email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response message = User was created\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"User was created\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"{{studentEmail}}\",\r\n  \"name\": \"Jon Snow\",\r\n  \"group\": \"XYZ\",\r\n  \"password\": \"{{studentPassword}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/sign-up",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"sign-up"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/ - New Student activationCode",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var jsonData=pm.response.json();\r",
+							"pm.environment.set(\"activationCode\", jsonData[0].activationCode);\r",
+							"pm.environment.set(\"studentId\", jsonData[0].id)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/users?_where=(email,eq,{{studentEmail}})",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users"
+					],
+					"query": [
+						{
+							"key": "_where",
+							"value": "(email,eq,{{studentEmail}})"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/activate/idS/actCode",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Message - User was activated\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"User was activated\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/activate/{{studentId}}/{{activationCode}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"activate",
+						"{{studentId}}",
+						"{{activationCode}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/sign-in - [T]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response time is less than 2000ms\", function () {\r",
+							"\tpm.expect(pm.response.responseTime).to.be.below(2000);\r",
+							"});\r",
+							"pm.test(\"Verify user role = TEACHER\", function () {\r",
+							"\tpm.expect(pm.response.text()).to.include(\"TEACHER\");\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.environment.set(\"teacherToken\", jsonData.token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"qa.sofi@gmail.com\",\r\n  \"password\": \"ABC123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/sign-in",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"sign-in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/sign-in - [T] - Invalid Password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404 - Authentication failed. User not found or password does not match\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"qa.sofi@gmail.com\",\r\n  \"password\": \"ABC12345Y\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/sign-in",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"sign-in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/sign-in - [S]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response time is less than 2000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"Verify user role = STUDENT\", function () {\r",
+							"\t\tpm.expect(jsonData.user.role).to.eql(\"STUDENT\");\r",
+							"});\r",
+							"pm.environment.set(\"studentToken\", jsonData.token);\r",
+							"pm.environment.set(\"studentId\", jsonData.user.id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"{{studentEmail}}\",\r\n  \"password\": \"{{studentPassword}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/sign-in",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"sign-in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/quiz -[T] Create a new quiz",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response time is less than 2000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.environment.set(\"idQuiz\", jsonData.id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{teacherToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Demo Quiz OlenaYaa 04/17/24\",\r\n  \"totalScore\": 18,\r\n  \"passingPercentage\": 75,\r\n  \"showStopperQuestion\": 1,\r\n  \"questions\": [\r\n    {\r\n      \"type\": \"TEXTUAL\",\r\n      \"question\": \"What is your name?\",\r\n      \"score\": 5\r\n    },\r\n    {\r\n      \"type\": \"SINGLE_CHOICE\",\r\n      \"question\": \"Which city is city largest in California?\",\r\n      \"score\": 7,\r\n      \"answer\": 2,\r\n      \"hasOtherOption\": false,\r\n      \"options\": [\r\n        \"San Francisco\",\r\n        \"Sacramento\",\r\n        \"Los Angeles\",\r\n        \"Redding\"\r\n      ]\r\n    },\r\n    {\r\n      \"type\": \"MULTIPLE_CHOICE\",\r\n      \"question\": \"Who was apple founded by?\",\r\n      \"score\": 6,\r\n      \"answers\": [\r\n        0,\r\n        1,\r\n        2\r\n      ],\r\n      \"hasOtherOption\": true,\r\n      \"options\": [\r\n        \"Steve Jobs\",\r\n        \"Steve Wozniak\",\r\n        \"Ronald Wayne\",\r\n        \"Ronald Reagan\"\r\n      ]\r\n    }\r\n  ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/quiz",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"quiz"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/quizzes - [T] List of quizzes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"var myQuiz = pm.environment.get(\"idQuiz\");",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Verify the number of quiz created\", function () {",
+							"    pm.expect(jsonData[jsonData.length-1].id).to.eql(myQuiz);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{teacherToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/quizzes",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"quizzes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/assignment - [T] New assignment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response time is less than 2000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.environment.set(\"assignmentId\", jsonData[jsonData.length-1].id);\r",
+							"pm.environment.set(\"assignmentGroupID\", jsonData[jsonData.length-1].assignmentGroupID);\r",
+							"\r",
+							"pm.test(\"Verify the status, result, and gradedBy of assignment befor submission\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData[jsonData.length-1].status).to.eql(\"ASSIGNED\");\r",
+							"\t\tpm.expect(jsonData[jsonData.length-1].result).to.eql(\"PENDING\");\r",
+							"\t\tpm.expect(jsonData[jsonData.length-1].gradedBy).to.eql(\"NONE\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{teacherToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"quizId\": {{idQuiz}},\r\n  \"userIds\": [{{studentId}}]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/assignment",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"assignment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/submit-assignment - [S]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Status, result, gradedBy - after submission\", function () {",
+							"    var jsonData = pm.response.json();",
+							"\t\tpm.expect(jsonData[jsonData.length-1].status).to.eql(\"GRADED\");",
+							"\t\tpm.expect(jsonData[jsonData.length-1].result).to.eql(\"FAILED\");",
+							"\t\tpm.expect(jsonData[jsonData.length-1].gradedBy).to.eql(\"AUTOMATIC\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{studentToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"assignmentId\": {{assignmentId}},\r\n    \"answers\": [\r\n        {\r\n            \"textAnswer\": \"Correct \",\r\n            \"answer\": null\r\n        },\r\n        {\r\n            \"textAnswer\": \"\",\r\n            \"answer\": 1\r\n        },\r\n        {\r\n            \"textAnswer\": \"\",\r\n            \"answer\": [\r\n                0,\r\n                1,\r\n                2\r\n            ]\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/submit-assignment",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"submit-assignment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/assignment/:assignmentId - [T] Manual grading",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status, result, and gradedBy after manual grading\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData[jsonData.length-1].status).to.eql(\"GRADED\");\r",
+							"    pm.expect(jsonData[jsonData.length-1].result).to.eql(\"PASSED\");\r",
+							"    pm.expect(jsonData[jsonData.length-1].gradedBy).to.eql(\"TEACHER\");\r",
+							"\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{teacherToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"summary\": \"Summary from teacher\",\r\n  \"result\": \"PASSED\",\r\n  \"grades\": [\r\n    {\r\n      \"comment\": \"Teacher comment\",\r\n      \"additionalScore\": 5\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/assignment/{{assignmentId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"assignment",
+						"{{assignmentId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/quiz/id - [T]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Message - Quiz was deleted\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Quiz was deleted\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{teacherToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/quiz/{{idQuiz}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"quiz",
+						"{{idQuiz}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/assignment/:assignmentGroupID - [T]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Body matches string - Assignment was deleted\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Assignment was deleted\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{teacherToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/assignment/{{assignmentGroupID}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"assignment",
+						"{{assignmentGroupID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/forgot-password - [S]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Body matches string - Reset password email was sent\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Reset password email was sent\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"{{studentEmail}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/forgot-password",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"forgot-password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/ - Reset passwordS activationCode",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var jsonData=pm.response.json();\r",
+							"pm.environment.set(\"activationCode\", jsonData[0].activationCode);\r",
+							"pm.environment.set(\"studentId\", jsonData[0].id)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/users?_where=(email,eq,{{studentEmail}})",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users"
+					],
+					"query": [
+						{
+							"key": "_where",
+							"value": "(email,eq,{{studentEmail}})"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/reset-password/:userId/:activationCode - [S]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Body matches string - Password was changed\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Password was changed\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"password\": \"myNewPassword\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/reset-password/{{studentId}}/{{activationCode}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"reset-password",
+						"{{studentId}}",
+						"{{activationCode}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/users/change-role/studentId - [T]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Body matches string - User role was updated\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"User role was updated\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{teacherToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"role\": \"TEACHER\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/change-role/{{studentId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"change-role",
+						"{{studentId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/users/:userId - [T]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Body matches string - User was deleted\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"User was deleted\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{teacherToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/{{studentId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"{{studentId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
